@@ -9,8 +9,8 @@ Created on Mon Aug  5 12:50:32 2019
 import datetime as dt
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
 
 
 default_args = {
