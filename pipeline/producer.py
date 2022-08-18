@@ -26,7 +26,7 @@ from newsapi.newsapi_client import NewsApiClient
 # Step 4: run producer.py to start sending data through Kafka
 # =============================================================================
 
-#logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 def get_historical_data(symbol=symbol_list[0],outputsize='full'):
     """
@@ -40,49 +40,42 @@ def get_historical_data(symbol=symbol_list[0],outputsize='full'):
              'high'  : 208.0,
              'low'   : 207.74,
              'close' : 207.75,
-             'adjusted_close': 207.74,
              'volume': 354454.0,
-             'dividend_amount': 0.0,
-             'split_coefficient': 1.0
             }
     
     """
     
     # get data using AlphaAvantage's API
     
-    url="https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={}&outputsize={}&interval=1min&apikey={}".format(symbol,outputsize,config['api_key'])
+    url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&outputsize={}&interval=1min&apikey={}".format(symbol,outputsize,config['api_key'])
 
-    req=requests.get(url)
-    if req.status_code==200:
-        raw_data=json.loads(req.content)
+    req = requests.get(url)
+    if req.status_code == 200:
+        raw_data = json.loads(req.content)
         try:
-            price=raw_data['Time Series (Daily)']
+            price = raw_data['Time Series (Daily)']
 
         except KeyError:
             print(raw_data)
             exit()
     
-        rename={'symbol':'symbol',
+        rename = {
+                'symbol':'symbol',
                 'time':'time',
                 '1. open':'open',
                 '2. high':'high',
                 '3. low':'low',
                 '4. close':'close',
-                '5. adjusted close':'adjusted_close',
-                '6. volume':'volume',
-                '7. dividend amount':'dividend_amount',
-                '8. split coefficient':'split_coefficient'}
+                '5. volume':'volume'}
         
-        for k,v in price.items():
+        for k, v in price.items():
             v.update({'symbol':symbol,'time':k})
         price=dict((key,dict((rename[k],v) for (k,v) in value.items())) for (key, value) in price.items())
         price=list(price.values())
         print("Get {}/'s historical data today.".format(symbol))
-        
         return price
-    
-    
-    
+
+
 def get_intraday_data(symbol=symbol_list[0],outputsize='compact',freq='1min'):
     """
     :param outputsize: (str) 'compact' returns only the latest 100 data points in the intraday time series; 
@@ -99,8 +92,7 @@ def get_intraday_data(symbol=symbol_list[0],outputsize='compact',freq='1min'):
             }
     
     """
-    
-    
+
     # get data using AlphaAvantage's API
     url="https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={}&outputsize={}&interval={}&apikey={}".format(symbol,outputsize,freq,config['api_key'])
     req=requests.get(url)
@@ -118,10 +110,10 @@ def get_intraday_data(symbol=symbol_list[0],outputsize='compact',freq='1min'):
         time_zone=meta['6. Time Zone']
         
         if outputsize=='compact':
-            #only get the most recent price
+            # only get the most recent price
             last_price=price[max(price.keys())]
             
-            #organize data to dict
+            # organize data to dict
             value={"symbol":symbol,
                    "time":meta['3. Last Refreshed'],
                    "open":last_price['1. open'],
@@ -148,7 +140,6 @@ def get_intraday_data(symbol=symbol_list[0],outputsize='compact',freq='1min'):
             value=list(price.values())
             print('Get {}\'s full length intraday data.'.format(symbol))
 
-            
     # if request failed, return a fake data point
     else:
         time_zone=timeZone
@@ -163,6 +154,7 @@ def get_intraday_data(symbol=symbol_list[0],outputsize='compact',freq='1min'):
         
     return value,time_zone
 
+
 def check_trading_hour(data_time):
     if data_time.time()<datetime.time(9,30):
         last_day=data_time-datetime.timedelta(days=1)
@@ -172,11 +164,12 @@ def check_trading_hour(data_time):
         data_time=datetime.datetime(data_time.year,data_time.month,data_time.day,16,0,0)
     return data_time
 
+
 def get_tick_intraday_data(symbol=symbol_list[0]):
     
     # get data using AlphaAvantage's API
-    time_zone=timeZone
-    url="https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={}&apikey={}".format(symbol,config['api_key2'])
+    time_zone = timeZone
+    url = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={}&apikey={}".format(symbol,config['api_key2'])
     req=requests.get(url)
     data_time=datetime.datetime.now(timezone(time_zone))
     data_time=check_trading_hour(data_time)
@@ -190,8 +183,8 @@ def get_tick_intraday_data(symbol=symbol_list[0]):
         except KeyError:
             print(raw_data)
             exit()
-        
-        #organize data to dict
+
+        # organize data to dict
         value={"symbol":symbol,
                "time":str(data_time)[:19],
                "open":price['02. open'],
@@ -205,8 +198,6 @@ def get_tick_intraday_data(symbol=symbol_list[0]):
                "change_percent":price['10. change percent']}
         
         print('Get {}\'s latest tick data at {}'.format(symbol,data_time))
-        
-            
     # if request failed, return a fake data point
     else:
         print('  Failed: Cannot get {}\'s data at {}:{} '.format(symbol,data_time))
@@ -223,20 +214,16 @@ def get_tick_intraday_data(symbol=symbol_list[0]):
                "change_percent":0.}
     return value, time_zone
 
+
 def get_news():
     
-    api='23e4c7e51a9a49d39dc4e7261305dd02'
+    api='f642f8cf5ded4f6cb71ecb496b0c8fc4'
     newsapi = NewsApiClient(api_key=api)
     top_headlines = newsapi.get_top_headlines(country='us',category='business',page_size=70,language='en')
     return top_headlines    
-    
-    
-    
 
 
-
-    
-def kafka_producer(producer,symbol='^GSPC',tick=False):
+def kafka_producer(producer, symbol='^GSPC', tick=False):
     """
     :param producer: (KafkaProducer) an instance of KafkaProducer with configuration written in config.py
     :return: None
@@ -267,12 +254,9 @@ def kafka_producer_news(producer):
         for article in news['articles']:
             now_timezone=datetime.datetime.now(timezone(timeZone))
             producer.send(topic='news', value=bytes(str(article), 'utf-8'))
-            #print("Sent economy news : {}".format(now_timezone))
+            # print("Sent economy news : {}".format(now_timezone))
     
 
-
-
-    
 def kafka_producer_fake(producer,symbol):
     """
     send fake data to test visualization
@@ -290,17 +274,14 @@ def kafka_producer_fake(producer,symbol):
            "close":close,
            "volume":np.random.uniform(-1,1)*6e9}
     producer.send(topic=config['topic_name2'], value=bytes(str(value), 'utf-8'))
-    #print("Sent {}'s fake data.".format(symbol))
+    # print("Sent {}'s fake data.".format(symbol))
     
-    
-    
-    
-    
+
 if __name__=="__main__":
 
     # init an instance of KafkaProducer
     producer = KafkaProducer(bootstrap_servers=config['kafka_broker'])
-    #kafka_producer(producer)
+    # kafka_producer(producer)
 
     # schedule to send data every minute
     if datetime.datetime.now(timezone(timeZone)).time()>datetime.time(16,0,0) or datetime.datetime.now(timezone(timeZone)).time()<datetime.time(9,30,0):
@@ -310,8 +291,7 @@ if __name__=="__main__":
     schedule.every(30).seconds.do(kafka_producer_news,producer)
     while True:
         schedule.run_pending()
-    
-    
+
     pass
 
 

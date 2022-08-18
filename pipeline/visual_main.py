@@ -35,7 +35,7 @@ l1=column(row(stock_select),
 tab1 = Panel(child = l1, title = 'Stock: Streaming & Fundamental')
 
 """TAB 2"""
-p,p2,widget,stats,corr=compare_plot()
+p, p2, widget, stats, corr=compare_plot()
 l2=column(row(widget,stats,corr),gridplot([[p],[p2]], toolbar_location="right", plot_width=1300))
 tab2=Panel(child = l2, title = 'Stock: Comparison')
 

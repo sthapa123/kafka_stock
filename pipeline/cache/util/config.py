@@ -8,7 +8,7 @@ Created on Fri Jul 26 15:12:08 2019
 
 
 
-config={'api_key':"0MCP1QDS7AXSPLUU",
+config={'api_key':"V6O1POPHS5IIFR1D",
         'api_key2':"RCDA53W9YNUTL8FY",
         'secret':'sk_856da84974a34eeb833fd6ea4b1bb419',
         'symbol':'AAPL',
@@ -21,7 +21,7 @@ config={'api_key':"0MCP1QDS7AXSPLUU",
 
 
 
-path='/home/nancy/kafka_stock/pipeline/'
+path='/home/sthapa/kafka_stock/pipeline/'
 
 path='./'
 

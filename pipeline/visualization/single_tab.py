@@ -124,7 +124,7 @@ def candlestick():
                                         high=list(df.high.values),
                                         low=list(df.low.values),
                                         volume=list(df.volume.values),
-                                        time=list(df.time.dt.date.values),
+                                        time=list(pd.to_datetime(df.time, errors='coerce').dt.date.values),
                                         color=list(color.values)))
     
     

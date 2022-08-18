@@ -22,8 +22,8 @@ config={'api_key':"0MCP1QDS7AXSPLUU",
 
 
 
-path='/home/nancy/kafka_stock/pipeline/'
+path='/home/sthapa/kafka_stock/pipeline/'
 path='./'
-timeZone='US/Eastern'
+timeZone='US/Central'
 
 
