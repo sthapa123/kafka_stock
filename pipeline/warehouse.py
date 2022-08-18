@@ -217,19 +217,14 @@ class CassandraStorage(object):
                 dict_data['title'] = dict_data['title'].replace('\'', '@@')
             except:
                 pass
-            # query = "INSERT INTO NEWS (date,publishedat,source,title,description,url) VALUES ("{}","{}","{}","{}","{}","{}");" \
-            #     .format(publishtime[:10], publishtime,
-            #             dict_data['source']['name'],
-            #             dict_data['title'].replace('\'', '@@'),
-            #             dict_data['description'],
-            #             dict_data['url'])
 
-            query = """
-                INSERT INTO NEWS (date, publishedat, source, title, description, url)
-                VALUES (%(date)s, %(publisedat)s, %(source)s, %(title)s, %(description)s, %(url)s)
+            self.session.execute(
+                """ INSERT INTO NEWS (date, publishedat, source, title, description, url)
+                VALUES (%(date)s, %(publishedat)s, %(source)s, %(title)s, %(description)s, %(url)s)
                 """,
-            {'date': publishtime[:10], 'publishedat': publishtime, 'source': dict_data['source']['name'], 'title': dict_data['title'], 'description': dict_data['description'], 'url': dict_data['url']}
-            self.session.execute(query)
+                {'date': publishtime[:10], 'publishedat': publishtime, 'source': dict_data['source']['name'],
+                 'title': dict_data['title'], 'description': dict_data['description'], 'url': dict_data['url']}
+            )
             print("Stored news '{}' at {}".format(dict_data['title'], dict_data['publishedAt']))
 
     def delete_table(self, table_name):
