@@ -27,7 +27,7 @@ def splitTextToTriplet(string, n):
     return grouped_words
 
 
-symbol_list = ['MSFT', 'META', 'GOOG', 'TSLA', 'AMZN']
+symbol_list = ['MSFT', 'META', 'GOOG', 'TSLA', 'AMZN', '^GSPC']
 
 
 def prev_weekday(adate):
