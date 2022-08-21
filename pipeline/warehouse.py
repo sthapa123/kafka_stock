@@ -211,7 +211,6 @@ class CassandraStorage(object):
     def news_to_cassandra(self):
         for msg in self.consumer3:
             dict_data = ast.literal_eval(msg.value.decode("utf-8"))
-            print(dict_data)
             publishtime = dict_data['publishedAt'][:10] + ' ' + dict_data['publishedAt'][11:19]
             try:
                 dict_data['description'] = dict_data['description'].replace('\'', '@@')
