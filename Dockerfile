@@ -1,8 +1,7 @@
 FROM ubuntu:latest
-RUN apt-get update && yes|apt-get upgrade
-RUN apt-get install -y wget bzip2 sudo
-RUN apt-get install -y emacs nano vim default-jre
-RUN apt-get install openjdk-8-jre-headless
+RUN apt-get update && yes|apt-get upgrade && \
+    apt-get install -y wget bzip2 sudo && \
+    apt-get install -y emacs nano vim default-jre
 
 RUN adduser --disabled-password --gecos '' sthapa
 RUN adduser sthapa sudo
@@ -22,35 +21,20 @@ RUN pip install --upgrade pip
 
 RUN jupyter notebook --generate-config --allow-root
 
- 
-RUN wget https://archive.apache.org/dist/zookeeper/zookeeper-3.5.5/apache-zookeeper-3.5.5-bin.tar.gz
-RUN tar -xvf apache-zookeeper-3.5.5-bin.tar.gz
-RUN rm apache-zookeeper-3.5.5-bin.tar.gz
-RUN mkdir apache-zookeeper-3.5.5-bin/data
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-
-RUN wget https://archive.apache.org/dist/kafka/2.3.0/kafka_2.12-2.3.0.tgz
-RUN tar -xzf kafka_2.12-2.3.0.tgz
-RUN rm kafka_2.12-2.3.0.tgz
-
-RUN wget https://archive.apache.org/dist/cassandra/4.0.5/apache-cassandra-4.0.5-bin.tar.gz
-RUN tar -xvf apache-cassandra-4.0.5-bin.tar.gz
-RUN rm apache-cassandra-4.0.5-bin.tar.gz
-ENV PATH /home/sthapa/apache-cassandra-4.0.5/bin:$PATH
-
-
 RUN sudo apt-get install -y gcc
-RUN pip install apache-airflow
+RUN pip install apache-airflow typing_extensions
 
+ENV AIRFLOW__CORE__DAGS_FOLDER="/home/sthapa/kafka_stock/airflow/dags"
 RUN pip install Flask
 RUN airflow db init
-RUN mkdir /home/sthapa/airflow/dags
+RUN airflow users  create --role Admin --username admin --email admin@admin.com --firstname admin --lastname admin --password admin
 
 ADD . /home/sthapa/kafka_stock
 RUN sudo chmod 777 -R /home/sthapa/kafka_stock
-RUN cp kafka_stock/zoo.cfg apache-zookeeper-3.5.5-bin/conf/
+
+ENV BOKEH_PORT="5006" BOKEH_PREFIX="" BOKEH_LOG_LEVEL="info"
+
 RUN pip install --upgrade -r kafka_stock/requirements.txt
 
 RUN sudo apt-get install -y tmux
 ENV NAME kafka_stock
-

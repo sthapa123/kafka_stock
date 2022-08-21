@@ -258,7 +258,8 @@ def kafka_producer_news(producer):
     if news['articles'] != []:
         for article in news['articles']:
             now_timezone = datetime.datetime.now(timezone(timeZone))
-            producer.send(topic='news', value=bytes(str(article), 'utf-8'))
+            producer.send(topic=config['topic_name3'], value=bytes(str(article), 'utf-8'))
+            #producer.flush()
             print("Sent economy news : {}".format(now_timezone))
 
 
@@ -287,7 +288,7 @@ if __name__ == "__main__":
     # init an instance of KafkaProducer
     producer = KafkaProducer(bootstrap_servers=config['kafka_broker'])
     # kafka_producer(producer)
-    kafka_producer_news(producer)
+    # kafka_producer_news(producer)
 
     # schedule to send data every minute
     if datetime.datetime.now(timezone(timeZone)).time() > datetime.time(16, 0, 0) or datetime.datetime.now(

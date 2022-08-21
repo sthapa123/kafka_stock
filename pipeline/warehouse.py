@@ -39,7 +39,7 @@ class CassandraStorage(object):
         self.key_space = config['key_space']
 
         # init a Cassandra cluster instance
-        cluster = Cluster()
+        cluster = Cluster(['10.0.0.4'], port=9042 )
 
         # start Cassandra server before connecting       
         try:
@@ -115,15 +115,15 @@ class CassandraStorage(object):
         """
         self.consumer1 = KafkaConsumer(
             config['topic_name1'],
-            bootstrap_servers=config['kafka_broker'])
+            bootstrap_servers=config['kafka_broker'], auto_offset_reset='latest', group_id='stock_streaming_1_group', enable_auto_commit=True)
 
         self.consumer2 = KafkaConsumer(
             config['topic_name2'],
-            bootstrap_servers=config['kafka_broker'])
+            bootstrap_servers=config['kafka_broker'], auto_offset_reset='latest', group_id='stock_streaming_2_group', enable_auto_commit=True)
 
         self.consumer3 = KafkaConsumer(
-            'news',
-            bootstrap_servers=config['kafka_broker'])
+            config['topic_name3'],
+            bootstrap_servers=config['kafka_broker'], auto_offset_reset='earliest', group_id='news_group', enable_auto_commit=True)
 
     def historical_to_cassandra(self, price, intraday=False):
         """
@@ -211,6 +211,7 @@ class CassandraStorage(object):
     def news_to_cassandra(self):
         for msg in self.consumer3:
             dict_data = ast.literal_eval(msg.value.decode("utf-8"))
+            print(dict_data)
             publishtime = dict_data['publishedAt'][:10] + ' ' + dict_data['publishedAt'][11:19]
             try:
                 dict_data['description'] = dict_data['description'].replace('\'', '@@')
