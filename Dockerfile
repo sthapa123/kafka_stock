@@ -25,6 +25,8 @@ RUN sudo apt-get install -y gcc
 RUN pip install apache-airflow typing_extensions
 
 ENV AIRFLOW__CORE__DAGS_FOLDER="/home/sthapa/kafka_stock/airflow/dags"
+ENV AIRFLOW__CORE__LOAD_EXAMPLES="False"
+
 RUN pip install Flask
 RUN airflow db init
 RUN airflow users  create --role Admin --username admin --email admin@admin.com --firstname admin --lastname admin --password admin

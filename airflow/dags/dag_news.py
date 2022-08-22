@@ -26,18 +26,18 @@ default_args = {
     'retries': 0
 }
 
-with DAG('dag_aftertradingday',
+with DAG('dag_news',
          default_args=default_args,
          schedule_interval='0 22 * * *',
          ) as dag:
 
     exec_dir = os.environ.get("AIRFLOW__CORE__DAGS_FOLDER")
-    exec_dir = os.path.abspath(os.path.join(os.path.dirname( exec_dir ), '..', 'airflow'))
-    exec_script = exec_dir + "/consumer_aftertrading.sh "
+    exec_dir = os.path.abspath(os.path.join(os.path.dirname(exec_dir), '..', 'airflow'))
+    exec_script = exec_dir + "/consumer_news.sh "
 
     if os.path.exists(exec_script.rstrip()):
         t1 = BashOperator(
-            task_id='AfterTrading',
+            task_id='News',
             bash_command=exec_script,
             dag=dag
         )
